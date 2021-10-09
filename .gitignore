@@ -244,3 +244,6 @@ tags
 .history
 
 # End of https://www.toptal.com/developers/gitignore/api/go,vim,linux,emacs,macos,visualstudiocode,intellij+all
+
+/.idea
+*.iml

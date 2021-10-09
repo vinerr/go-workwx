@@ -9,22 +9,15 @@ import (
 
 // RxMessage 一条接收到的消息
 type RxMessage struct {
-	// FromUserID 发送者的 UserID
-	FromUserID string
-	// SendTime 消息发送时间
-	SendTime time.Time
-	// MsgType 消息类型
-	MsgType MessageType
-	// MsgID 消息 ID
-	MsgID int64
-	// AgentID 企业应用 ID，可在应用的设置页面查看
-	AgentID int64
-	// Event 事件类型 MsgType为event存在
-	Event EventType
-	// ChangeType 变更类型 Event为change_external_contact存在
-	ChangeType ChangeType
-
-	extras messageKind
+	CorpID     sring       // 接收消息企业ID
+	FromUserID string      // FromUserID 发送者的 UserID
+	SendTime   time.Time   // SendTime 消息发送时间
+	MsgType    MessageType // MsgType 消息类型
+	MsgID      int64       // MsgID 消息 ID
+	AgentID    int64       // AgentID 企业应用 ID，可在应用的设置页面查看
+	Event      EventType   // Event 事件类型 MsgType为event存在
+	ChangeType ChangeType  // ChangeType 变更类型 Event为change_external_contact存在
+	extras     messageKind
 }
 
 func fromEnvelope(body []byte) (*RxMessage, error) {
@@ -49,6 +42,7 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 		sendTime := time.Unix(common.CreateTime, 0) // in time.Local
 
 		obj = RxMessage{
+			CorpID:     common.ToUserName,
 			FromUserID: common.FromUserName,
 			SendTime:   sendTime,
 			MsgType:    common.MsgType,
