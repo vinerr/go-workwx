@@ -9,7 +9,7 @@ import (
 
 // RxMessage 一条接收到的消息
 type RxMessage struct {
-	CorpID     sring       // 接收消息企业ID
+	CorpID     string      // 接收消息企业ID
 	FromUserID string      // FromUserID 发送者的 UserID
 	SendTime   time.Time   // SendTime 消息发送时间
 	MsgType    MessageType // MsgType 消息类型
@@ -63,7 +63,8 @@ func (m *RxMessage) String() string {
 
 	_, _ = fmt.Fprintf(
 		&sb,
-		"RxMessage { FromUserID: %#v, SendTime: %d, MsgType: %#v, MsgID: %d, AgentID: %d, Event: %#v, ChangeType: %#v, ",
+		"RxMessage { CorpID: %#v, FromUserID: %#v, SendTime: %d, MsgType: %#v, MsgID: %d, AgentID: %d, Event: %#v, ChangeType: %#v, ",
+		m.CorpID,
 		m.FromUserID,
 		m.SendTime.UnixNano(),
 		m.MsgType,
