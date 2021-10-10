@@ -2,7 +2,6 @@ package httpapi
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -105,6 +104,5 @@ func (h *LowlevelHandler) echoTestHandler(
 
 	rw.WriteHeader(http.StatusOK)
 	// No way to signal failure with the typical HTTP handler method signature
-	fmt.Println(">>>>>>>>", string(payload.Msg), args.EchoStr)
 	_, _ = rw.Write(payload.Msg)
 }
