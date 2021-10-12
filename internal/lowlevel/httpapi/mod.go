@@ -3,24 +3,27 @@ package httpapi
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/xen0n/go-workwx/internal/lowlevel/encryptor"
 	"github.com/xen0n/go-workwx/internal/lowlevel/envelope"
 )
 
-type LowlevelHandler struct {
+type LowLevelHandler struct {
 	token     string
 	encryptor *encryptor.WorkwxEncryptor
 	ep        *envelope.Processor
 	eh        EnvelopeHandler
+	ctx       *gin.Context
 }
 
-var _ http.Handler = (*LowlevelHandler)(nil)
+var _ http.Handler = (*LowLevelHandler)(nil)
 
-func NewLowlevelHandler(
+func NewLowLevelHandler(
 	token string,
 	encodingAESKey string,
 	eh EnvelopeHandler,
-) (*LowlevelHandler, error) {
+) (*LowLevelHandler, error) {
 	enc, err := encryptor.NewWorkwxEncryptor(encodingAESKey)
 	if err != nil {
 		return nil, err
@@ -31,7 +34,7 @@ func NewLowlevelHandler(
 		return nil, err
 	}
 
-	return &LowlevelHandler{
+	return &LowLevelHandler{
 		token:     token,
 		encryptor: enc,
 		ep:        ep,
@@ -39,7 +42,11 @@ func NewLowlevelHandler(
 	}, nil
 }
 
-func (h *LowlevelHandler) ServeHTTP(
+func (h *LowLevelHandler) SetGinContext(c *gin.Context) {
+	h.ctx = c
+}
+
+func (h *LowLevelHandler) ServeHTTP(
 	rw http.ResponseWriter,
 	r *http.Request,
 ) {

@@ -78,7 +78,7 @@ func (x URLValuesForEchoTestAPI) ToEchoTestAPIArgs() (EchoTestAPIArgs, error) {
 	}, nil
 }
 
-func (h *LowlevelHandler) echoTestHandler(
+func (h *LowLevelHandler) echoTestHandler(
 	rw http.ResponseWriter,
 	r *http.Request,
 ) {

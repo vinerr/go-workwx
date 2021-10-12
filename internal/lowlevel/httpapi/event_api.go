@@ -4,14 +4,16 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/xen0n/go-workwx/internal/lowlevel/envelope"
 )
 
 type EnvelopeHandler interface {
-	OnIncomingEnvelope(rx envelope.Envelope) error
+	OnIncomingEnvelope(ctx *gin.Context, rx envelope.Envelope) error
 }
 
-func (h *LowlevelHandler) eventHandler(
+func (h *LowLevelHandler) eventHandler(
 	rw http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -31,7 +33,7 @@ func (h *LowlevelHandler) eventHandler(
 		return
 	}
 
-	err = h.eh.OnIncomingEnvelope(ev)
+	err = h.eh.OnIncomingEnvelope(h.ctx, ev)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
@@ -40,5 +42,7 @@ func (h *LowlevelHandler) eventHandler(
 	// currently we always return empty 200 responses
 	// any reply is to be sent asynchronously
 	// this might change in the future (maybe save a couple of RTT or so)
-	rw.WriteHeader(http.StatusOK)
+	if h.ctx == nil {
+		rw.WriteHeader(http.StatusOK)
+	}
 }

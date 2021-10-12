@@ -7,17 +7,22 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/xen0n/go-workwx"
 )
 
 type dummyRxMessageHandler struct{}
 
-var _ workwx.RxMessageHandler = dummyRxMessageHandler{}
+var _ workwx.RxMessageHandler = &dummyRxMessageHandler{}
 
 // OnIncomingMessage 一条消息到来时的回调。
-func (dummyRxMessageHandler) OnIncomingMessage(msg *workwx.RxMessage) error {
+func (o *dummyRxMessageHandler) OnIncomingMessage(ctx *gin.Context, msg *workwx.RxMessage) error {
 	// You can do much more!
 	fmt.Printf("incoming message: %s\n", msg)
+
+	if ctx != nil {
+		ctx.Data(http.StatusOK, gin.MIMEJSON, []byte{""})
+	}
 	return nil
 }
 
@@ -28,7 +33,7 @@ func main() {
 
 	flag.Parse()
 
-	hh, err := workwx.NewHTTPHandler(*pToken, *pEncodingAESKey, dummyRxMessageHandler{})
+	hh, err := workwx.NewHTTPHandler(*pToken, *pEncodingAESKey, &dummyRxMessageHandler{})
 	if err != nil {
 		panic(err)
 	}

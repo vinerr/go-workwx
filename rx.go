@@ -3,6 +3,8 @@ package workwx
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/xen0n/go-workwx/internal/lowlevel/envelope"
 	"github.com/xen0n/go-workwx/internal/lowlevel/httpapi"
 )
@@ -10,7 +12,7 @@ import (
 // RxMessageHandler 用来接收消息的接口。
 type RxMessageHandler interface {
 	// OnIncomingMessage 一条消息到来时的回调。
-	OnIncomingMessage(msg *RxMessage) error
+	OnIncomingMessage(ctx *gin.Context, msg *RxMessage) error
 }
 
 type lowlevelEnvelopeHandler struct {
@@ -19,17 +21,18 @@ type lowlevelEnvelopeHandler struct {
 
 var _ httpapi.EnvelopeHandler = (*lowlevelEnvelopeHandler)(nil)
 
-func (h *lowlevelEnvelopeHandler) OnIncomingEnvelope(rx envelope.Envelope) error {
+func (h *lowlevelEnvelopeHandler) OnIncomingEnvelope(ctx *gin.Context, rx envelope.Envelope) error {
 	msg, err := fromEnvelope(rx.Msg)
 	if err != nil {
 		return err
 	}
 
-	return h.highlevelHandler.OnIncomingMessage(msg)
+	return h.highlevelHandler.OnIncomingMessage(ctx, msg)
 }
 
 type HTTPHandler struct {
-	inner *httpapi.LowlevelHandler
+	ctx   *gin.Context
+	inner *httpapi.LowLevelHandler
 }
 
 var _ http.Handler = (*HTTPHandler)(nil)
@@ -53,6 +56,11 @@ func NewHTTPHandler(
 	}
 
 	return &obj, nil
+}
+
+func (h *HTTPHandler) SetGinContext(c *gin.Context) {
+	h.ctx = c
+	h.inner.SetGinContext(h.ctx)
 }
 
 func (h *HTTPHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
