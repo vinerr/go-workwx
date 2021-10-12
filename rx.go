@@ -46,7 +46,7 @@ func NewHTTPHandler(
 		highlevelHandler: rxMessageHandler,
 	}
 
-	llHandler, err := httpapi.NewLowlevelHandler(token, encodingAESKey, lleh)
+	llHandler, err := httpapi.NewLowLevelHandler(token, encodingAESKey, lleh)
 	if err != nil {
 		return nil, err
 	}
