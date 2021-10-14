@@ -7,6 +7,16 @@ import (
 	"mime/multipart"
 	"net/url"
 	"sync"
+	"time"
+
+	"github.com/gocolly/colly"
+	"github.com/sirupsen/logrus"
+)
+
+// Chrome相关
+const (
+	TimeZone           = "Asia/Shanghai"
+	UserAgentForChrome = `Mozilla/5.0 (Windows NT  6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36`
 )
 
 // Workwx 企业微信客户端
@@ -140,7 +150,30 @@ func (c *WorkwxApp) executeQyapiJSONPost(path string, req bodyer, respObj interf
 		// TODO: error_chain
 		return err
 	}
+	return nil
+}
 
+func (c *WorkwxApp) executeQiYeApiJSONCollyPost(path string, req bodyer, respObj *respMessageSend, withAccessToken bool) error {
+	url := c.composeQyapiURLWithToken(path, req, withAccessToken)
+	urlStr := url.String()
+
+	body, err := req.intoBody()
+	if err != nil {
+		// TODO: error_chain
+		return err
+	}
+
+	res := c.collyPost(urlStr, body)
+	err = json.Unmarshal(res, respObj)
+	if err != nil {
+		logrus.Errorln(err)
+		return err
+	}
+
+	if respObj.ErrCode != 0 {
+		logrus.Errorfp("", respObj)
+		return fmt.Errorf("%s", respObj.ErrMsg)
+	}
 	return nil
 }
 
@@ -183,4 +216,89 @@ func (c *WorkwxApp) executeQyapiMediaUpload(
 	}
 
 	return nil
+}
+
+func (c *WorkwxApp) collyGet(URL string) (body []byte) {
+	u, err := url.Parse(URL)
+	if err != nil {
+		logrus.Errorln(err)
+		return body
+	}
+
+	collyClient := colly.NewCollector()
+	collyClient.SetRequestTimeout(100 * time.Second)
+	collyClient.UserAgent = UserAgentForChrome
+
+	start := time.Now()
+
+	collyClient.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("Host", u.Host)
+		r.Headers.Set("Connection", "keep-alive")
+		r.Headers.Set("Accept", "*/*")
+		r.Headers.Set("Origin", u.Host)
+		r.Headers.Set("Referer", URL)
+		r.Headers.Set("Accept-Encoding", "gzip, deflate")
+		r.Headers.Set("Accept-Language", "zh-CN, zh;q=0.9")
+		r.Headers.Set("Content-Type", "application/json;charset=UTF-8")
+	})
+
+	collyClient.OnResponse(func(resp *colly.Response) {
+		logrus.Infoln("Response from", u.Host)
+		body = resp.Body
+		return
+	})
+	collyClient.OnError(func(resp *colly.Response, err error) {
+		logrus.Errorln(err)
+	})
+
+	if err = collyClient.Visit(URL); err != nil {
+		logrus.Errorln(err)
+	}
+	eT := time.Since(start)
+	logrus.Infoln("======> Send finished", u.Host, eT)
+	return body
+}
+
+func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
+	u, err := url.Parse(URL)
+	if err != nil {
+		logrus.Errorln(err)
+		return body
+	}
+
+	collyClient := colly.NewCollector()
+	collyClient.SetRequestTimeout(100 * time.Second)
+	collyClient.UserAgent = UserAgentForChrome
+
+	start := time.Now()
+
+	collyClient.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("Host", u.Host)
+		r.Headers.Set("Connection", "keep-alive")
+		r.Headers.Set("Accept", "*/*")
+		r.Headers.Set("Origin", u.Host)
+		r.Headers.Set("Referer", URL)
+		r.Headers.Set("Accept-Encoding", "gzip, deflate")
+		r.Headers.Set("Accept-Language", "zh-CN, zh;q=0.9")
+		r.Headers.Set("Content-Type", "application/json;charset=UTF-8")
+	})
+
+	collyClient.OnResponse(func(resp *colly.Response) {
+		logrus.Infoln("Response from", u.Host)
+		body = resp.Body
+		return
+	})
+	collyClient.OnError(func(resp *colly.Response, err error) {
+		logrus.Errorln(err)
+	})
+
+	err2 := collyClient.PostRaw(URL, data)
+	if err2 != nil {
+		logrus.Errorln(err2)
+		return
+	}
+
+	eT := time.Since(start)
+	logrus.Infoln("======> Send finished", u.Host, eT)
+	return body
 }

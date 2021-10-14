@@ -341,7 +341,12 @@ func (c *WorkwxApp) execAppchatGet(req reqAppchatGet) (respAppchatGet, error) {
 // execMessageSend 发送应用消息
 func (c *WorkwxApp) execMessageSend(req reqMessage) (respMessageSend, error) {
 	var resp respMessageSend
-	err := c.executeQyapiJSONPost("/cgi-bin/message/send", req, &resp, true)
+	// err := c.executeQyapiJSONPost("/cgi-bin/message/send", req, &resp, true)
+	// if err != nil {
+	// 	return respMessageSend{}, err
+	// }
+
+	err := c.executeQiYeApiJSONCollyPost("/cgi-bin/message/send", req, &resp, true)
 	if err != nil {
 		return respMessageSend{}, err
 	}
