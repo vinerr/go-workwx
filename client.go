@@ -290,6 +290,7 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 	})
 	collyClient.OnError(func(resp *colly.Response, err error) {
 		logrus.Errorln(err)
+		logrus.Warnln(string(data))
 	})
 
 	err2 := collyClient.PostRaw(URL, data)

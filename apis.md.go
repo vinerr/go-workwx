@@ -2,6 +2,8 @@
 
 package workwx
 
+import "github.com/sirupsen/logrus"
+
 // execGetAccessToken 获取access_token
 func (c *WorkwxApp) execGetAccessToken(req reqAccessToken) (respAccessToken, error) {
 	var resp respAccessToken
@@ -346,6 +348,7 @@ func (c *WorkwxApp) execMessageSend(req reqMessage) (respMessageSend, error) {
 	// 	return respMessageSend{}, err
 	// }
 
+	logrus.Debugfp("", req)
 	err := c.executeQiYeApiJSONCollyPost("/cgi-bin/message/send", req, &resp, true)
 	if err != nil {
 		return respMessageSend{}, err
