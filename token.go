@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
-	"github.com/sirupsen/logrus"
 )
 
 type tokenInfo struct {
@@ -122,7 +121,6 @@ func (t *token) getToken() string {
 		_ = t.syncToken()
 		t.mutex.RLock()
 	}
-	logrus.Debugln(t.expiresIn, t.lastRefresh)
 	tokenToUse := t.token
 	t.mutex.RUnlock()
 	return tokenToUse

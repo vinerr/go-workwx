@@ -171,7 +171,6 @@ func (c *WorkwxApp) executeQiYeApiJSONCollyPost(path string, req bodyer, respObj
 	}
 
 	if respObj.ErrCode != 0 {
-		logrus.Errorfp("", respObj)
 		return fmt.Errorf("%s", respObj.ErrMsg)
 	}
 	return nil
