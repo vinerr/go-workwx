@@ -269,8 +269,6 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 	collyClient.SetRequestTimeout(120 * time.Second)
 	collyClient.UserAgent = UserAgentForChrome
 
-	start := time.Now()
-
 	collyClient.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("Host", u.Host)
 		r.Headers.Set("Connection", "keep-alive")
@@ -283,7 +281,6 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 	})
 
 	collyClient.OnResponse(func(resp *colly.Response) {
-		logrus.Infoln("Response from", u.Host)
 		body = resp.Body
 		return
 	})
@@ -299,8 +296,5 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 	}
 
 	collyClient.Wait()
-
-	eT := time.Since(start)
-	logrus.Infoln("======> Send finished", u.Host, eT)
 	return body
 }
