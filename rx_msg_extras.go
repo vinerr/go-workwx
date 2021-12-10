@@ -63,6 +63,10 @@ func extractMessageExtras(common rxMessageCommon, body []byte) (messageKind, err
 
 	case MessageTypeEvent:
 		switch common.Event {
+		case EventTypeClick:
+			return nil, nil
+		case EventTypeView:
+			return nil, nil
 		case EventTypeSysApprovalChange:
 			var x rxEventSysApprovalChange
 			err := xml.Unmarshal(body, &x)
@@ -120,7 +124,6 @@ func extractMessageExtras(common rxMessageCommon, body []byte) (messageKind, err
 					return nil, err
 				}
 				return &x, nil
-
 			default:
 				return nil, fmt.Errorf("unknown change type '%s'", common.ChangeType)
 			}

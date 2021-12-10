@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 
 	"github.com/xen0n/go-workwx/internal/lowlevel/envelope"
 	"github.com/xen0n/go-workwx/internal/lowlevel/httpapi"
@@ -27,7 +26,6 @@ func (h *lowlevelEnvelopeHandler) OnIncomingEnvelope(ctx *gin.Context, rx envelo
 	if err != nil {
 		return err
 	}
-	logrus.Debugln(">>>>>>001")
 	return h.highlevelHandler.OnIncomingMessage(ctx, msg)
 }
 

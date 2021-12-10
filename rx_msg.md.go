@@ -18,6 +18,8 @@ type rxMessageCommon struct {
 	AgentID int64 `xml:"AgentID"`
 	// Event 事件类型 MsgType为event存在
 	Event EventType `xml:"Event"`
+	// Event 事件类型 EventKey为event存在
+	EventKey string `xml:"EventKey"`
 	// ChangeType 变更类型 Event为change_external_contact存在
 	ChangeType ChangeType `xml:"ChangeType"`
 }
@@ -48,6 +50,9 @@ const MessageTypeEvent MessageType = "event"
 
 // EventType 事件类型
 type EventType string
+
+const EventTypeClick EventType = "click"
+const EventTypeView EventType = "view"
 
 // EventTypeChangeExternalContact 企业客户事件
 const EventTypeChangeExternalContact EventType = "change_external_contact"

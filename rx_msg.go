@@ -18,12 +18,12 @@ type RxMessage struct {
 	MsgID      int64       // MsgID 消息 ID
 	AgentID    int64       // AgentID 企业应用 ID，可在应用的设置页面查看
 	Event      EventType   // Event 事件类型 MsgType为event存在
+	EventKey   string      // 事件位置
 	ChangeType ChangeType  // ChangeType 变更类型 Event为change_external_contact存在
 	extras     messageKind
 }
 
 func fromEnvelope(body []byte) (*RxMessage, error) {
-	logrus.Debugln(">>>>>>001")
 
 	// extract common part
 	var common rxMessageCommon
@@ -33,16 +33,14 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 		return nil, err
 	}
 
-	logrus.Debugfp("", common)
-	logrus.Debugln("", string(body))
-
 	// deal with polymorphic message types
 	extras, err := extractMessageExtras(common, body)
 	if err != nil {
 		logrus.Errorln(err)
 		return nil, err
 	}
-	logrus.Debugln(">>>>>>003")
+
+	logrus.Debugfp("", common)
 
 	// assemble message object
 	var obj RxMessage
@@ -50,7 +48,6 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 		// let's force people to think about timezones okay?
 		// -- let's not
 		sendTime := time.Unix(common.CreateTime, 0) // in time.Local
-
 		obj = RxMessage{
 			CorpID:     common.ToUserName,
 			FromUserID: common.FromUserName,
@@ -59,12 +56,11 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 			MsgID:      common.MsgID,
 			AgentID:    common.AgentID,
 			Event:      common.Event,
+			EventKey:   common.EventKey,
 			ChangeType: common.ChangeType,
-
-			extras: extras,
+			extras:     extras,
 		}
 	}
-
 	return &obj, nil
 }
 
