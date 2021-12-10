@@ -40,8 +40,6 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 		return nil, err
 	}
 
-	logrus.Debugfp("", common)
-
 	// assemble message object
 	var obj RxMessage
 	{
