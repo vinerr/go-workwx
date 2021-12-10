@@ -33,7 +33,8 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 		return nil, err
 	}
 
-	logrus.Debugln(">>>>>>002")
+	logrus.Debugfp("", common)
+	logrus.Debugln("", string(body))
 
 	// deal with polymorphic message types
 	extras, err := extractMessageExtras(common, body)
