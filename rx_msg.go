@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 // RxMessage 一条接收到的消息
@@ -33,6 +35,7 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 	if err != nil {
 		return nil, err
 	}
+	logrus.Debugln(">>>>>>002")
 
 	// assemble message object
 	var obj RxMessage

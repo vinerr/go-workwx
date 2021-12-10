@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/xen0n/go-workwx/internal/lowlevel/encryptor"
 	"github.com/xen0n/go-workwx/internal/lowlevel/signature"
 )
@@ -49,10 +51,7 @@ func NewProcessor(
 
 var errInvalidSignature = errors.New("invalid signature")
 
-func (p *Processor) HandleIncomingMsg(
-	url *url.URL,
-	body []byte,
-) (Envelope, error) {
+func (p *Processor) HandleIncomingMsg(url *url.URL, body []byte) (Envelope, error) {
 	// xml unmarshal
 	var x xmlRxEnvelope
 	err := xml.Unmarshal(body, &x)
@@ -60,16 +59,22 @@ func (p *Processor) HandleIncomingMsg(
 		return Envelope{}, err
 	}
 
+	logrus.Debugln("001")
+
 	// check signature
 	if !signature.VerifyHTTPRequestSignature(p.token, url, x.Encrypt) {
 		return Envelope{}, errInvalidSignature
 	}
+
+	logrus.Debugln("002")
 
 	// decrypt message
 	msg, err := p.encryptor.Decrypt([]byte(x.Encrypt))
 	if err != nil {
 		return Envelope{}, err
 	}
+
+	logrus.Debugln("003")
 
 	// assemble envelope to return
 	return Envelope{

@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/xen0n/go-workwx/internal/lowlevel/signature"
 )
 
@@ -78,16 +80,15 @@ func (x URLValuesForEchoTestAPI) ToEchoTestAPIArgs() (EchoTestAPIArgs, error) {
 	}, nil
 }
 
-func (h *LowLevelHandler) echoTestHandler(
-	rw http.ResponseWriter,
-	r *http.Request,
-) {
+func (h *LowLevelHandler) echoTestHandler(rw http.ResponseWriter, r *http.Request) {
 	url := r.URL
 
 	if !signature.VerifyHTTPRequestSignature(h.token, url, "") {
 		rw.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	logrus.Debugln(r.Method)
 
 	adapter := URLValuesForEchoTestAPI(url.Query())
 	args, err := adapter.ToEchoTestAPIArgs()
@@ -96,11 +97,15 @@ func (h *LowLevelHandler) echoTestHandler(
 		return
 	}
 
+	logrus.Debugln(r.Method)
+
 	payload, err := h.encryptor.Decrypt([]byte(args.EchoStr))
 	if err != nil {
 		rw.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	logrus.Debugln(r.Method)
 
 	rw.WriteHeader(http.StatusOK)
 	// No way to signal failure with the typical HTTP handler method signature

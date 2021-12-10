@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 
 	"github.com/xen0n/go-workwx/internal/lowlevel/encryptor"
 	"github.com/xen0n/go-workwx/internal/lowlevel/envelope"
@@ -50,6 +51,8 @@ func (h *LowLevelHandler) ServeHTTP(
 	rw http.ResponseWriter,
 	r *http.Request,
 ) {
+
+	logrus.Debugln(r.Method)
 	switch r.Method {
 	case http.MethodGet:
 		// 测试回调模式请求
