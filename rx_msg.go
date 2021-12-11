@@ -24,7 +24,6 @@ type RxMessage struct {
 }
 
 func fromEnvelope(body []byte) (*RxMessage, error) {
-
 	// extract common part
 	var common rxMessageCommon
 	err := xml.Unmarshal(body, &common)
@@ -36,7 +35,6 @@ func fromEnvelope(body []byte) (*RxMessage, error) {
 	// deal with polymorphic message types
 	extras, err := extractMessageExtras(common, body)
 	if err != nil {
-		logrus.Errorln(err)
 		return nil, err
 	}
 
