@@ -3,6 +3,7 @@ module github.com/xen0n/go-workwx
 go 1.12
 
 require (
+	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/xmlquery v1.3.7 // indirect

@@ -106,7 +106,7 @@ func (c *WorkwxApp) composeQyapiURLWithToken(path string, req interface{}, withA
 	return url
 }
 
-func (c *WorkwxApp) executeQyapiGet(path string, req urlValuer, respObj interface{}, withAccessToken bool) error {
+func (c *WorkwxApp) executeQiYeApiGet(path string, req urlValuer, respObj interface{}, withAccessToken bool) error {
 	url := c.composeQyapiURLWithToken(path, req, withAccessToken)
 	urlStr := url.String()
 
@@ -127,7 +127,7 @@ func (c *WorkwxApp) executeQyapiGet(path string, req urlValuer, respObj interfac
 	return nil
 }
 
-func (c *WorkwxApp) executeQyapiJSONPost(path string, req bodyer, respObj interface{}, withAccessToken bool) error {
+func (c *WorkwxApp) executeQiYePost(path string, req bodyer, respObj interface{}, withAccessToken bool) error {
 	url := c.composeQyapiURLWithToken(path, req, withAccessToken)
 	urlStr := url.String()
 
@@ -153,7 +153,7 @@ func (c *WorkwxApp) executeQyapiJSONPost(path string, req bodyer, respObj interf
 	return nil
 }
 
-func (c *WorkwxApp) executeQiYeApiJSONCollyPost(path string, req bodyer, respObj *respMessageSend, withAccessToken bool) error {
+func (c *WorkwxApp) executeCollyPost(path string, req bodyer, respObj *respMessageSend, withAccessToken bool) error {
 	url := c.composeQyapiURLWithToken(path, req, withAccessToken)
 	urlStr := url.String()
 
@@ -176,7 +176,7 @@ func (c *WorkwxApp) executeQiYeApiJSONCollyPost(path string, req bodyer, respObj
 	return nil
 }
 
-func (c *WorkwxApp) executeQyapiMediaUpload(
+func (c *WorkwxApp) executeQiYeApiMediaUpload(
 	path string,
 	req mediaUploader,
 	respObj interface{},
@@ -265,9 +265,16 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 		return body
 	}
 
-	collyClient := colly.NewCollector(colly.MaxDepth(1), colly.DetectCharset(), colly.Async(true), colly.AllowURLRevisit())
+	start := time.Now()
+	defer func() {
+		eT := time.Since(start)
+		logrus.Infoln("===>", URL[len(u.Host)+1+len("http://"):], "|", eT)
+	}()
+
+	// collyClient := colly.NewCollector(colly.MaxDepth(1), colly.DetectCharset(), colly.Async(true), colly.AllowURLRevisit())
+	collyClient := colly.NewCollector(colly.MaxDepth(1), colly.DetectCharset(), colly.AllowURLRevisit())
 	collyClient.SetRequestTimeout(120 * time.Second)
-	collyClient.UserAgent = UserAgentForChrome
+	collyClient.UserAgent = GetUserAgent()
 
 	collyClient.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("Host", u.Host)
@@ -294,7 +301,6 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 		logrus.Errorln(err2)
 		return
 	}
-
 	collyClient.Wait()
 	return body
 }

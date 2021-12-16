@@ -161,11 +161,11 @@ func (e *goEmitter) emitAPICall(x *apiCall) error {
 	var execMethodName string
 	switch x.method {
 	case apiMethodGET:
-		execMethodName = "executeQyapiGet"
+		execMethodName = "executeQiYeApiGet"
 	case apiMethodPOSTJSON:
-		execMethodName = "executeQyapiJSONPost"
+		execMethodName = "executeCollyPost"
 	case apiMethodPOSTMedia:
-		execMethodName = "executeQyapiMediaUpload"
+		execMethodName = "executeQiYeApiMediaUpload"
 	default:
 		panic("unimplemented")
 	}
