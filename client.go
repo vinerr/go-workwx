@@ -169,10 +169,6 @@ func (c *WorkwxApp) executeCollyPost(path string, req bodyer, respObj interface{
 		logrus.Errorln(err)
 		return err
 	}
-
-	if respObj.ErrCode != 0 {
-		return fmt.Errorf("%s", respObj.ErrMsg)
-	}
 	return nil
 }
 
