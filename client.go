@@ -153,7 +153,7 @@ func (c *WorkwxApp) executeQiYePost(path string, req bodyer, respObj interface{}
 	return nil
 }
 
-func (c *WorkwxApp) executeCollyPost(path string, req bodyer, respObj *respMessageSend, withAccessToken bool) error {
+func (c *WorkwxApp) executeCollyPost(path string, req bodyer, respObj interface{}, withAccessToken bool) error {
 	url := c.composeQyapiURLWithToken(path, req, withAccessToken)
 	urlStr := url.String()
 
