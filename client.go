@@ -261,11 +261,11 @@ func (c *WorkwxApp) collyPost(URL string, data []byte) (body []byte) {
 		return body
 	}
 
-	start := time.Now()
-	defer func() {
-		eT := time.Since(start)
-		logrus.Infoln("===>", URL[len(u.Host)+1+len("http://"):], "|", eT)
-	}()
+	// start := time.Now()
+	// defer func() {
+	// 	eT := time.Since(start)
+	// 	logrus.Infoln("===>", URL[len(u.Host)+1+len("http://"):], "|", eT)
+	// }()
 
 	// collyClient := colly.NewCollector(colly.MaxDepth(1), colly.DetectCharset(), colly.Async(true), colly.AllowURLRevisit())
 	collyClient := colly.NewCollector(colly.MaxDepth(1), colly.DetectCharset(), colly.AllowURLRevisit())
